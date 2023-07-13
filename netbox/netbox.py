@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright: (c) 2017, Ahmed AbouZaid <http://aabouzaid.com/>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -9,9 +9,9 @@ import yaml
 import argparse
 
 try:
-    import requests
+    import httpx
 except ImportError:
-    sys.exit('requests package is required for this inventory script.')
+    sys.exit('httpx package is required for this inventory script.')
 
 try:
     import json
@@ -176,7 +176,8 @@ class NetboxAsInventory(object):
         # Pagination.
         while api_url:
             # Get hosts list.
-            api_output = requests.get(api_url, params=api_url_params, headers=api_url_headers)
+            with httpx.Client(http2=True) as client:
+                api_output = client.get(api_url, params=api_url_params, headers=api_url_headers)
 
             # Check that a request is 200 and not something else like 404, 401, 500 ... etc.
             api_output.raise_for_status()
